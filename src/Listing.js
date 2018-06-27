@@ -3,6 +3,7 @@ import React from 'react';
 class Listing extends React.Component {
     constructor(props) {
         super(props);
+        this.getPullRequest();
         this.state  = {
             items: [],
             list: [],
@@ -10,9 +11,10 @@ class Listing extends React.Component {
             messages: []
         }
     }
-    componentWillMount() {
-        fetch('https://api.github.com/repos/facebook/react/pulls?access_token=0acea5e6bfa8950f76a75f19250454236487ad76&state=all')
+    getPullRequest() {
+        fetch('https://api.github.com/repos/facebook/react/pulls?access_token=0acea5e6bfa8950f76a75f19250454236487ad76&state=all&page=2&per_page=100')
         .then((res) => {
+            console.log(res.headers, 'HEADERS');
             res.json().then((result) => {
                 this.setState({
                     items: result
@@ -21,16 +23,22 @@ class Listing extends React.Component {
                 var list =[]
                 Object.keys(this.state.items).map((title) => { //eslint-disable-line
                     let pullRequest = this.state.items[title].title;
+                    let stateRequest = this.state.items[title].state;
+                    let numberRequest = this.state.items[title].number;
                     fetch(`${this.state.items[title].comments_url}?access_token=0acea5e6bfa8950f76a75f19250454236487ad76`).then((response) => {
                         let obj = {
-                            pulls: '',
+                            title: '',
+                            stateRequest: '',
+                            numberRequest: '',
                             com: []
                         };
                         response.json().then((result) => {
                             console.log(result, 'result');
                             list.push( 
                                 obj = {
-                                        pulls: pullRequest,
+                                        title: pullRequest,
+                                        stateRequest: stateRequest,
+                                        numberRequest: numberRequest,
                                         com: result
                                     }
                             )
@@ -59,10 +67,32 @@ class Listing extends React.Component {
         console.log(this.state.messages, 'state message');
     }
     render() {
+        const li = {
+
+        }
         console.log(this.state.list, 'LIST');
         return (
             this.state.flag ?
             <div className="container" >
+                {/* <div>
+                    {
+                        this.state.list.map((resp, index) => {
+                            return(
+                            <ul onClick={() => {this.handleClick(resp)}}>
+                                <li key={index}>
+                                    <div>
+                                        <div>{resp.title}</div>
+                                        <div>{resp.stateRequest}</div>
+                                        <div>{resp.numberRequest}</div>
+                                        <div>{resp.com.lenght}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                            );
+                        })
+                    }
+                </div> */}
+                                
                 <table className="table table-condensed">
                     <thead>
                         <tr>
@@ -74,8 +104,15 @@ class Listing extends React.Component {
                         {
                             this.state.list.map((resp, index) => {
                                 return(
-                                    <tr key={index} onClick={() => {this.handleClick(resp)}}>
-                                        <td>{resp.pulls}</td>
+                                    <tr align="left" key={index} style={{cursor: 'pointer'}} onClick={() => {this.handleClick(resp)}}>
+                                        <td>
+                                            <table>
+                                                    <tr><td>{resp.title}</td></tr>
+                                                    <tr><td>{resp.stateRequest}</td></tr>
+                                                    <tr><td>#{resp.numberRequest}</td></tr>
+                                                    <tr><td>{resp.com.lenght}</td></tr>
+                                            </table>
+                                        </td>
                                         <td>{resp.com.length}</td>
                                     </tr>
                                 );
@@ -96,9 +133,9 @@ class Listing extends React.Component {
                     {
                         this.state.messages.map((res) => {
                         return(
-                        <tr>
+                        <tr align="left">
                             <td>
-                                <li>{res.body}</li>
+                                <li dangerouslySetInnerHTML={{__html: res.body}} ></li>
                             </td>
                         </tr>
                         );

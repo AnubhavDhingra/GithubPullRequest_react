@@ -96,9 +96,11 @@ class Listing extends React.Component {
                     {
                         this.state.messages.map((res) => {
                         return(
-                        <td>
-                            {res.body}
-                        </td>
+                        <tr>
+                            <td>
+                                <li>{res.body}</li>
+                            </td>
+                        </tr>
                         );
                         })
                     }

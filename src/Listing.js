@@ -12,7 +12,7 @@ class Listing extends React.Component {
         }
     }
     getPullRequest() {
-        fetch('https://api.github.com/repos/facebook/react/pulls?access_token=0acea5e6bfa8950f76a75f19250454236487ad76&state=all&page=2&per_page=100')
+        fetch('https://api.github.com/repos/facebook/react/pulls?access_token=0acea5e6bfa8950f76a75f19250454236487ad76&state=all&page=1&per_page=100')
         .then((res) => {
             console.log(res.headers, 'HEADERS');
             res.json().then((result) => {
@@ -25,8 +25,10 @@ class Listing extends React.Component {
                     let pullRequest = this.state.items[title].title;
                     let stateRequest = this.state.items[title].state;
                     let numberRequest = this.state.items[title].number;
+                    let nameRequest = this.state.items[title].user.login;
                     fetch(`${this.state.items[title].comments_url}?access_token=0acea5e6bfa8950f76a75f19250454236487ad76`).then((response) => {
                         let obj = {
+                            name: '',
                             title: '',
                             stateRequest: '',
                             numberRequest: '',
@@ -36,6 +38,7 @@ class Listing extends React.Component {
                             console.log(result, 'result');
                             list.push( 
                                 obj = {
+                                        name: nameRequest,
                                         title: pullRequest,
                                         stateRequest: stateRequest,
                                         numberRequest: numberRequest,
@@ -67,9 +70,9 @@ class Listing extends React.Component {
         console.log(this.state.messages, 'state message');
     }
     render() {
-        const li = {
-
-        }
+        this.state.list.sort((a,b) => {
+            return b.com.length - a.com.length
+        });
         console.log(this.state.list, 'LIST');
         return (
             this.state.flag ?
@@ -92,7 +95,6 @@ class Listing extends React.Component {
                         })
                     }
                 </div> */}
-                                
                 <table className="table table-condensed">
                     <thead>
                         <tr>
@@ -107,10 +109,10 @@ class Listing extends React.Component {
                                     <tr align="left" key={index} style={{cursor: 'pointer'}} onClick={() => {this.handleClick(resp)}}>
                                         <td>
                                             <table>
+                                                    <tr><td>Created By: {resp.name}</td></tr>
                                                     <tr><td>{resp.title}</td></tr>
                                                     <tr><td>{resp.stateRequest}</td></tr>
                                                     <tr><td>#{resp.numberRequest}</td></tr>
-                                                    <tr><td>{resp.com.lenght}</td></tr>
                                             </table>
                                         </td>
                                         <td>{resp.com.length}</td>
